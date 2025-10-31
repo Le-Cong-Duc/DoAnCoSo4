@@ -15,4 +15,17 @@ public class Seats {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "seat_id")
     private Integer seatId;
+
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    private Rooms roomId;
+
+    @Column(name = "seat_row")
+    private Integer seatRow;
+
+    @Column(name = "seat_number")
+    private Integer seatNumber;
+
+    @Column(name = "status")
+    private Integer status;
 }

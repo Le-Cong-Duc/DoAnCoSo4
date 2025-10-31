@@ -35,8 +35,8 @@ public class Movies {
     @Column(name = "director")
     private String director;
 
-    @Column(name = "cast")
-    private String cast;
+    @Column(name = "casts")
+    private String casts;
 
     @Column(name = "release_date")
     private LocalDate releaseDate;

@@ -1,4 +1,5 @@
 package com.example.BookTicketOnline.Entity;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "movies")
@@ -27,8 +29,13 @@ public class Movies {
     @Column(name = "duration")
     private Duration duration;
 
-    @OneToMany(mappedBy = "genreId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Genre> genres;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "movie_genre",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    private Set<Genre> genres;
 
     @Column(name = "director")
     private String director;
@@ -63,7 +70,7 @@ public class Movies {
     public Movies() {
     }
 
-    public Movies(Integer movieId, String movieName, String description, Duration duration, List<Genre> genres, String director, String casts, LocalDate releaseDate, String language, String posterUrl, String bannerUrl, Integer rating, Integer ageLimit) {
+    public Movies(Integer movieId, String movieName, String description, Duration duration, Set<Genre> genres, String director, String casts, LocalDate releaseDate, String language, String posterUrl, String bannerUrl, Integer rating, Integer ageLimit) {
         this.movieId = movieId;
         this.movieName = movieName;
         this.description = description;
@@ -111,11 +118,11 @@ public class Movies {
         this.duration = duration;
     }
 
-    public List<Genre> getGenres() {
+    public Set<Genre> getGenres() {
         return genres;
     }
 
-    public void setGenres(List<Genre> genres) {
+    public void setGenres(Set<Genre> genres) {
         this.genres = genres;
     }
 

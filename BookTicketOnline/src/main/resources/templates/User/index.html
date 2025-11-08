@@ -13,7 +13,7 @@
 
 <!-- Banner -->
 <div id="banner" class="container mt-4">
-    <img src="https://lifestyle.znews.vn/10-buc-anh-dep-nhat-giai-nhiep-anh-thien-van-cua-nam-post1237834.html" class="img-fluid rounded shadow" alt="Banner">
+    <img src="" class="img-fluid rounded shadow" alt="Banner">
 </div>
 
 <!-- Danh sách phim -->
@@ -21,13 +21,14 @@
     <h5 class="mb-4">Phim Đang Chiếu</h5>
     <div class="row row-cols-1 row-cols-md-4 g-4">
         <div class="col" th:each="movie : ${movies}">
-            <div class="card h-100 shadow-sm">
-                <img th:src="${movie.posterUrl}" th:alt="${movie.movieName}">
-                <div class="card-body text-center">
-                    <h6 class="card-title" th:text="${movie.movieName}"></h6>
-                    <a href="#" class="btn btn-sm btn-warning mt-2">Mua Vé</a>
+<!--            th:if = "${movie.ageLimit} >= 18">-->
+                <div class="card h-100 shadow-sm">
+                    <img th:src="${movie.posterUrl}" th:alt="${movie.movieName}">
+                    <div class="card-body text-center">
+                        <h6 class="card-title" th:text="${movie.movieName}"></h6>
+                        <a th:href="@{/BookTicket/{id}(id=${movie.movieId})}"  class="btn btn-sm btn-warning mt-2">Mua Vé</a>
+                    </div>
                 </div>
-            </div>
         </div>
     </div>
 
@@ -37,7 +38,7 @@
 <section class="bg-primary text-white mt-5 py-5 text-center">
     <h4>Đặt Vé Online - Không Lo Trễ Nải</h4>
     <p>Quét mã QR để tải ứng dụng Galaxy Cinema</p>
-    <img src="https://lifestyle.znews.vn/10-buc-anh-dep-nhat-giai-nhiep-anh-thien-van-cua-nam-post1237834.html" alt="QR" height="100">
+    <img src="" alt="QR" height="100">
 </section>
 
 <div th:replace="User/footer :: footer"></div>

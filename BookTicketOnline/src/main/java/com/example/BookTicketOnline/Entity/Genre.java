@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "genre")
 public class Genre {
@@ -16,17 +18,15 @@ public class Genre {
     @Column(name = "genre_name")
     private String genreName;
 
-    @ManyToOne
-    @JoinColumn(name = "movie_id")
-    private Movies movieId;
+    @ManyToMany(mappedBy = "genres")
+    private Set<Movies> movies;
 
     public Genre() {
     }
 
-    public Genre(Integer genreId, String genreName, Movies movieId) {
+    public Genre(Integer genreId, String genreName) {
         this.genreId = genreId;
         this.genreName = genreName;
-        this.movieId = movieId;
     }
 
     public Integer getGenreId() {
@@ -45,11 +45,4 @@ public class Genre {
         this.genreName = genreName;
     }
 
-    public Movies getMovieId() {
-        return movieId;
-    }
-
-    public void setMovieId(Movies movieId) {
-        this.movieId = movieId;
-    }
 }

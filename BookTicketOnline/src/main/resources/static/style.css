@@ -1,0 +1,21 @@
+html, body {
+        height: 100%;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+      }
+      main {
+        flex: 1; /* đẩy footer xuống cuối nếu nội dung ngắn */
+      }
+.card img {
+  height: 300px;
+  object-fit: cover;
+}
+.navbar-brand img {
+  height: 45px;
+}
+footer{
+    margin-bottom: 0;
+}
+

@@ -9,9 +9,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Table(name = "showtime")
 public class Showtime {
     @Id
@@ -39,4 +36,72 @@ public class Showtime {
     @OneToMany(mappedBy = "showtimeId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Booking> bookings;
 
+    public Showtime() {
+    }
+
+    public Showtime(Integer showtimeId, Movies movieId, Rooms roomId, LocalDateTime startTime, LocalDateTime endTime, Double price, List<Booking> bookings) {
+        this.showtimeId = showtimeId;
+        this.movieId = movieId;
+        this.roomId = roomId;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.price = price;
+        this.bookings = bookings;
+    }
+
+    public Integer getShowtimeId() {
+        return showtimeId;
+    }
+
+    public void setShowtimeId(Integer showtimeId) {
+        this.showtimeId = showtimeId;
+    }
+
+    public Movies getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(Movies movieId) {
+        this.movieId = movieId;
+    }
+
+    public Rooms getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(Rooms roomId) {
+        this.roomId = roomId;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public List<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
+    }
 }

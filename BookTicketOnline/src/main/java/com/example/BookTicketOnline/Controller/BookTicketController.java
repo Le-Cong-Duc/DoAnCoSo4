@@ -1,6 +1,9 @@
 package com.example.BookTicketOnline.Controller;
 
+import com.example.BookTicketOnline.Entity.Cinemas;
+import com.example.BookTicketOnline.Entity.Genre;
 import com.example.BookTicketOnline.Entity.Movies;
+import com.example.BookTicketOnline.Service.CinemasService;
 import com.example.BookTicketOnline.Service.MoviesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,21 +21,19 @@ public class BookTicketController {
     @Autowired
     private MoviesService moviesService;
 
+    @Autowired
+    private CinemasService cinemasService;
+
     @GetMapping("/BookTicket/{movieId}")
     public String bookTicket(@PathVariable Integer movieId, Model model) {
         Movies movie = moviesService.getMovieById(movieId);
+        List<Cinemas> cinemas= cinemasService.getAllCinema();
+
         if (movie == null) {
             return "redirect:/"; // Nếu không tìm thấy phim, quay về trang chủ
         }
 
         List<Map<String, String>> dates = generateDates();
-
-        List<Map<String, String>> cinemas = Arrays.asList(
-                createCinema("1", "Galaxy Nguyễn Du", "116 Nguyễn Du, Q1, TP.HCM"),
-                createCinema("2", "Galaxy Sala", "Lầu 3, TTTM Sala, Q2, TP.HCM"),
-                createCinema("3", "Galaxy Tân Bình", "246 Nguyễn Hồng Đào, Q.Tân Bình"),
-                createCinema("4", "Galaxy Kinh Dương Vương", "718 Kinh Dương Vương, Q6")
-        );
 
         List<Map<String, String>> showtimes = Arrays.asList(
                 createShowtime("1", "14:00"),
@@ -78,15 +79,6 @@ public class BookTicketController {
 
         return dates;
     }
-
-    private Map<String, String> createCinema(String id, String name, String address) {
-        Map<String, String> cinema = new HashMap<>();
-        cinema.put("id", id);
-        cinema.put("name", name);
-        cinema.put("address", address);
-        return cinema;
-    }
-
     private Map<String, String> createShowtime(String id, String timeSlot) {
         Map<String, String> showtime = new HashMap<>();
         showtime.put("id", id);

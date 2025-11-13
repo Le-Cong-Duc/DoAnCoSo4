@@ -46,6 +46,9 @@ public class Movies {
     @Column(name = "release_date")
     private LocalDate releaseDate;
 
+    @Column(name = "end_date")
+    private LocalDate endDate;
+
     @Column(name = "language")
     private String language;
 
@@ -70,7 +73,7 @@ public class Movies {
     public Movies() {
     }
 
-    public Movies(Integer movieId, String movieName, String description, Duration duration, Set<Genre> genres, String director, String casts, LocalDate releaseDate, String language, String posterUrl, String bannerUrl, Integer rating, Integer ageLimit) {
+    public Movies(Integer movieId, String movieName, String description, Duration duration, Set<Genre> genres, String director, String casts, LocalDate releaseDate, LocalDate endDate, String language, String posterUrl, String bannerUrl, Integer rating, Integer ageLimit) {
         this.movieId = movieId;
         this.movieName = movieName;
         this.description = description;
@@ -79,6 +82,7 @@ public class Movies {
         this.director = director;
         this.casts = casts;
         this.releaseDate = releaseDate;
+        this.endDate = endDate;
         this.language = language;
         this.posterUrl = posterUrl;
         this.bannerUrl = bannerUrl;
@@ -148,6 +152,14 @@ public class Movies {
 
     public void setReleaseDate(LocalDate releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
     public String getLanguage() {

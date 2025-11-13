@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Ticket - D&T Cinema</title>
+    <link rel="stylesheet" href="/bookticket.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="booking-container">
+        <!--        Header-->
+        <div class="header-gradient">
+            <h1>Đặt Vé Xem Phim</h1>
+            <p class="mb-0">D&T Cinema</p>
+        </div>
+
+        <!--        Content-->
+        <div class="movie-info-section">
+            <!--            Poster-->
+            <div class="col-md-3 text-center mb-3 mb-md-0">
+                <img class="movie-poster" th:src="${movie.posterUrl}" th:alt="${movie.movieName}">
+            </div>
+            <!--            Movie info-->
+            <div class="col-md-9">
+                <h2 class="mb-3" th:text="${movie.movieName}"></h2>
+
+                <div class="mb-2">
+                    <span class="me-3">
+                        <span th:text="${movie.duration} + ' phút'"></span>
+                    </span>
+                    <span class="me-3">
+                        <span th:text="${#temporals.format(movie.releaseDate,'dd/MM/yyyy')}"></span>
+                    </span>
+                    <span class="age-badge">
+                        <span th:text="${movie.ageLimit} + '+'"></span>
+                    </span>
+                    <span class="me-3">
+                        ⭐
+                        <strong th:text="${movie.rating}"></strong>
+                    </span>
+                </div>
+
+                <!--                Thể Loại-->
+                <p class="mb-1">
+                    <strong>Thể Loại: </strong>
+                    <span th:if="${movie.genres != null and !movie.genres.isEmpty()}">
+                        <span th:each="genre, inter : ${movie.genres}">
+                            <span class="badge bg-primary me-1" th:text="${genre.genreName}"></span>
+                        </span>
+                    </span>
+                    <span th:unless="${movie.genres != null and !movie.genres.isEmpty()}" class="text-muted">
+                        Chưa phân loại
+                    </span>
+                </p>
+                <!--                Đạo diễn-->
+                <p class="mb-1">
+                    <strong>Đạo diễn:</strong>
+                    <span th:text="${movie.director}"></span>
+                </p>
+                <!--                Diễn Viên-->
+                <p class="mb-0">
+                    <strong>Diễn viên:</strong>
+                    <span th:text="${movie.casts}"></span>
+                </p>
+            </div>
+
+            <!--            Booking Form-->
+            <div class="p-4" id="bookingForm">
+                <form th:action="@{BookTicket}" method="post">
+                    <input type="hidden" name="movieId" th:value="${movie.movieId}">
+
+                    <!-- Pick Day -->
+                    <h3 class="section-title">Chọn ngày chiếu</h3>
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-md-4 col-lg-2" th:each="date, stat : ${dates}">
+                            <input type="radio"
+                                   class="btn-check"
+                                   name="selectedDate"
+                                   th:id="'date' + ${stat.index}"
+                                   th:value="${date.dateValue}"
+                                   th:checked="${date.status == 'today'}"
+                                   th:disabled="${date.status == 'past'}"
+                                   required>
+                            <label class="date-card w-100"
+                                   th:for="'date' + ${stat.index}"
+                                   th:attr="data-status=${date.status}">
+                                <div class="small" th:text="${date.dayName}">Hôm nay</div>
+                                <div class="fs-5 fw-bold" th:text="${date.dateNumber}">08/11</div>
+                            </label>
+                        </div>
+                    </div>
+                    <!--                    Pick Cinema-->
+                    <h3 class="section-title">Chọn Rạp Chiếu</h3>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6 col-lg-4" th:each="cinema : ${cinemas}">
+                            <input type="radio"
+                                   class="btn-check"
+                                   name="cinemaId"
+                                   th:id="${cinema.cinemaId}"
+                                   th:value="${cinema.cinemaId}"
+                                   required>
+                            <label class="cinema-card w-100" th:for="${cinema.cinemaId}">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-2" th:text="${cinema.cinemaName}"></h6>
+                                    <p class="small text-muted mb-1">
+                                        <span th:text="${cinema.address}"></span>
+                                    </p>
+                                    <p class="small text-muted mb-0" th:if="${cinema.city}">
+                                        🏙<span th:text="${cinema.city}"></span>
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!--                    Button-->
+                    <div class="row g-3 mt-4">
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-secondary btn-custom w-100" onclick="history.back()">
+                                ← Quay Lại
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-continue btn-custom w-100">
+                                Tiếp Tục →
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!--            -->
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

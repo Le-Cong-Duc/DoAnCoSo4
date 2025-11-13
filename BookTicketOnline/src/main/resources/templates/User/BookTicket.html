@@ -35,24 +35,24 @@
                         <span class="ms-3">⭐ <strong th:text="${movie.rating}"></strong></span>
                     </div>
 
-<!--                    <p class="mb-1">-->
-<!--                        <strong>Thể loại:</strong>-->
-<!--                        <span th:if="${movie.genres != null and !movie.genres.isEmpty()}">-->
-<!--                            <span th:each="genre, iterStat : ${movie.genres}">-->
-<!--                                <span class="badge bg-primary me-1" th:text="${genre.genreName}"></span>-->
-<!--                            </span>-->
-<!--                        </span>-->
-<!--                        -->
-<!--                        <span th:unless="${movie.genres != null and !movie.genres.isEmpty()}"-->
-<!--                              class="text-muted">Chưa phân loại</span>-->
-<!--                    </p>-->
-
                     <p class="mb-1">
                         <strong>Thể loại:</strong>
-                        <th:block th:each="genre : ${movie.genres}">
-                            <span class="badge bg-primary me-1" th:text="${genre.genreName}"></span>
-                        </th:block>
+                        <span th:if="${movie.genres != null and !movie.genres.isEmpty()}">
+                            <span th:each="genre, iterStat : ${movie.genres}">
+                                <span class="badge bg-primary me-1" th:text="${genre.genreName}"></span>
+                            </span>
+                        </span>
+
+                        <span th:unless="${movie.genres != null and !movie.genres.isEmpty()}"
+                              class="text-muted">Chưa phân loại</span>
                     </p>
+
+<!--                    <p class="mb-1">-->
+<!--                        <strong>Thể loại:</strong>-->
+<!--                        <th:block th:each="genre : ${movie.genres}">-->
+<!--                            <span class="badge bg-primary me-1" th:text="${genre.genreName}"></span>-->
+<!--                        </th:block>-->
+<!--                    </p>-->
 
                     <p class="mb-1">
                         <strong>Đạo diễn:</strong>

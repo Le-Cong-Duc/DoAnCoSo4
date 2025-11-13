@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Controller
 public class BookTicketController {
@@ -27,13 +30,15 @@ public class BookTicketController {
     @GetMapping("/BookTicket/{movieId}")
     public String bookTicket(@PathVariable Integer movieId, Model model) {
         Movies movie = moviesService.getMovieById(movieId);
-        List<Cinemas> cinemas= cinemasService.getAllCinema();
+        List<Cinemas> cinemas = cinemasService.getAllCinema();
 
         if (movie == null) {
             return "redirect:/"; // Nếu không tìm thấy phim, quay về trang chủ
         }
 
-        List<Map<String, String>> dates = generateDates();
+        List<Map<String, String>> dates = generateShowDates(movie.getReleaseDate(), movie.getEndDate());
+
+        System.out.println(dates);
 
         List<Map<String, String>> showtimes = Arrays.asList(
                 createShowtime("1", "14:00"),
@@ -56,33 +61,54 @@ public class BookTicketController {
         model.addAttribute("seatCols", seatCols);
         model.addAttribute("occupiedSeats", occupiedSeats);
 
-        return "User/BookTicket";
+        return "User/BookTicketPage";
     }
 
-    private List<Map<String, String>> generateDates() {
-        List<Map<String, String>> dates = new ArrayList<>();
-        LocalDate today = LocalDate.now();
-        String[] dayNames = {"Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"};
-
-        for (int i = 0; i < 7; i++) {
-            LocalDate date = today.plusDays(i);
-            String dayName = i == 0 ? "Hôm Nay" : dayNames[date.getDayOfWeek().getValue() % 7];
-            String dateNumber = date.format(DateTimeFormatter.ofPattern("dd/MM"));
-            String dateValue = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-            Map<String, String> dateMap = new HashMap<>();
-            dateMap.put("dayName", dayName);
-            dateMap.put("dateNumber", dateNumber);
-            dateMap.put("dateValue", dateValue);
-            dates.add(dateMap);
-        }
-
-        return dates;
-    }
     private Map<String, String> createShowtime(String id, String timeSlot) {
         Map<String, String> showtime = new HashMap<>();
         showtime.put("id", id);
         showtime.put("timeSlot", timeSlot);
         return showtime;
+    }
+
+    private List<Map<String, String>> generateShowDates(LocalDate releaseDate, LocalDate endDate) {
+        List<Map<String, String>> dates = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM");
+        DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("EEEE", new Locale("vi"));
+
+        LocalDate actualEndDate = endDate != null ? endDate : releaseDate.plusDays(30);
+        if (actualEndDate.isBefore(releaseDate)) actualEndDate = releaseDate;
+
+        // Chỉ lấy từ hôm nay (nếu phim đã chiếu rồi)
+        LocalDate startDate = releaseDate.isBefore(today) ? today : releaseDate;
+
+        LocalDate currentDate = startDate;
+        while (!currentDate.isAfter(actualEndDate)) {
+            Map<String, String> dateMap = new HashMap<>();
+
+            String dayName;
+            if (currentDate.equals(today)) {
+                dayName = "Hôm nay";
+            } else if (currentDate.equals(today.plusDays(1))) {
+                dayName = "Ngày mai";
+            } else {
+                dayName = capitalizeFirst(dayFormatter.format(currentDate));
+            }
+
+            dateMap.put("dayName", dayName);
+            dateMap.put("dateNumber", dateFormatter.format(currentDate));
+            dateMap.put("dateValue", currentDate.toString());
+            dateMap.put("status", currentDate.equals(today) ? "today" : "future");
+
+            dates.add(dateMap);
+            currentDate = currentDate.plusDays(1);
+        }
+
+        return dates;
+    }
+    private String capitalizeFirst(String str) {
+        if (str == null || str.isEmpty()) return str;
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 }

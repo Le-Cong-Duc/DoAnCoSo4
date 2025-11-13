@@ -238,6 +238,60 @@
         animation: fadeIn 0.5s;
     }
 
+/* Date card styles */
+.date-card {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+/* Ngày tương lai - bình thường */
+.date-future {
+    border-color: #dee2e6;
+    background: white;
+}
+
+.date-future:hover {
+    border-color: #0d6efd;
+    background: #f8f9fa;
+}
+
+/* Ngày hôm nay - nổi bật */
+.date-today {
+    border-color: #0d6efd;
+    background: #0d6efd;
+    color: white;
+}
+
+/* Ngày đã qua - hiển thị nhạt */
+.date-past {
+    border-color: #f8f9fa;
+    background: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Ẩn radio button khi disabled */
+.btn-check:disabled + .date-past {
+    opacity: 0.6;
+}
+
+.btn-check:checked + .date-future {
+    border-color: #0d6efd;
+    background: #0d6efd;
+    color: white;
+}
+
+.btn-check:checked + .date-today {
+    border-color: #198754;
+    background: #198754;
+    color: white;
+}
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }

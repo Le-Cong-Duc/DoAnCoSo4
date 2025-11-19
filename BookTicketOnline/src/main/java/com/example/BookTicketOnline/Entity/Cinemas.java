@@ -27,7 +27,7 @@ public class Cinemas {
     @Column(name = "hotline")
     private String hotline;
 
-    @OneToMany(mappedBy = "cinemaId",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "cinemaId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Rooms> rooms;
 
     public Cinemas() {

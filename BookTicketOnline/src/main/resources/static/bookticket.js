@@ -40,4 +40,42 @@
   document.querySelectorAll('input[name="showtimeId"]').forEach(radio => {
       radio.addEventListener('change', updateSummary);
   });
+
+
+</script>
+
+<script>
+    function selectDate(element) {
+        // Remove active from all dates
+        document.querySelectorAll('.date-card').forEach(card => {
+            card.classList.remove('active');
+        });
+
+        // Add active to selected date
+        element.classList.add('active');
+
+        // Get selected date
+        const selectedDate = element.getAttribute('data-date');
+        const movieId = document.querySelector('input[name="movieId"]').value;
+
+        // Reload page with new date
+        window.location.href = `/BookTicket/${movieId}?date=${selectedDate}`;
+    }
+
+    function selectShowtime(button) {
+        // Remove selected from all showtime buttons
+        document.querySelectorAll('.showtime-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+
+        // Add selected to clicked button
+        button.classList.add('selected');
+
+        // Set showtime ID
+        const showtimeId = button.getAttribute('data-showtime-id');
+        document.getElementById('selectedShowtimeId').value = showtimeId;
+
+        // Enable continue button
+        document.getElementById('continueBtn').disabled = false;
+    }
 </script>

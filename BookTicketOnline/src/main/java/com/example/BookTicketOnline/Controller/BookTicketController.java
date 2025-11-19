@@ -1,23 +1,21 @@
 package com.example.BookTicketOnline.Controller;
 
 import com.example.BookTicketOnline.Entity.Cinemas;
-import com.example.BookTicketOnline.Entity.Genre;
 import com.example.BookTicketOnline.Entity.Movies;
+import com.example.BookTicketOnline.Entity.Rooms;
+import com.example.BookTicketOnline.Entity.Showtime;
 import com.example.BookTicketOnline.Service.CinemasService;
 import com.example.BookTicketOnline.Service.MoviesService;
+import com.example.BookTicketOnline.Service.ShowtimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-
+import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Controller
 public class BookTicketController {
@@ -27,48 +25,83 @@ public class BookTicketController {
     @Autowired
     private CinemasService cinemasService;
 
+    @Autowired
+    private ShowtimeService showTimeService;
+
     @GetMapping("/BookTicket/{movieId}")
-    public String bookTicket(@PathVariable Integer movieId, Model model) {
+    public String bookTicket(@PathVariable Integer movieId,
+                             @RequestParam(required = false) String date,
+                             Model model) {
         Movies movie = moviesService.getMovieById(movieId);
-        List<Cinemas> cinemas = cinemasService.getAllCinema();
 
         if (movie == null) {
-            return "redirect:/"; // Nếu không tìm thấy phim, quay về trang chủ
+            return "redirect:/";
         }
 
         List<Map<String, String>> dates = generateShowDates(movie.getReleaseDate(), movie.getEndDate());
 
-        System.out.println(dates);
+        String selectedDate = (date != null) ? date : LocalDate.now().toString();
 
-        List<Map<String, String>> showtimes = Arrays.asList(
-                createShowtime("1", "14:00"),
-                createShowtime("2", "14:45"),
-                createShowtime("3", "17:00"),
-                createShowtime("4", "19:00"),
-                createShowtime("5", "20:15"),
-                createShowtime("6", "22:15")
-        );
+        List<Map<String, Object>> cinemasWithShowtimes = getCinemasWithShowtimes(movieId, selectedDate);
 
-        List<String> seatRows = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H");
-        List<Integer> seatCols = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        List<String> occupiedSeats = Arrays.asList("A5", "A6", "B5", "B6", "C3", "D7", "D8", "E4", "E5");
+        System.out.println("Cinemas with showtimes count: " + cinemasWithShowtimes.size());
+        System.out.println("===================================");
 
         model.addAttribute("movie", movie);
         model.addAttribute("dates", dates);
-        model.addAttribute("cinemas", cinemas);
-        model.addAttribute("showtimes", showtimes);
-        model.addAttribute("seatRows", seatRows);
-        model.addAttribute("seatCols", seatCols);
-        model.addAttribute("occupiedSeats", occupiedSeats);
+        model.addAttribute("cinemasWithShowtimes", cinemasWithShowtimes);
+        model.addAttribute("selectedDate", selectedDate);
 
         return "User/BookTicketPage";
     }
 
-    private Map<String, String> createShowtime(String id, String timeSlot) {
-        Map<String, String> showtime = new HashMap<>();
-        showtime.put("id", id);
-        showtime.put("timeSlot", timeSlot);
-        return showtime;
+    private List<Map<String, Object>> getCinemasWithShowtimes(Integer movieId, String dateStr) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        LocalDate selectedDate = LocalDate.parse(dateStr);
+
+        // Get all cinemas
+        List<Cinemas> cinemas = cinemasService.getAllCinema();
+
+        for (Cinemas cinema : cinemas) {
+            // Get showtimes for this cinema, movie and date
+            List<Showtime> showtimes = showTimeService.getShowtimeByCinemaMovieAndDate(
+                    cinema.getCinemaId(), movieId, selectedDate);
+
+            if (!showtimes.isEmpty()) {
+                Map<String, Object> cinemaData = new HashMap<>();
+                cinemaData.put("cinema", cinema);
+
+                // Group showtimes by room
+                Map<String, List<Map<String, Object>>> roomShowtimes = new LinkedHashMap<>();
+
+                for (Showtime showtime : showtimes) {
+                    Rooms room = showtime.getRoomId();
+                    String roomKey = room.getRoomName(); // e.g., "2D Phụ Đề", "IMAX 2D Phụ Đề"
+
+                    if (!roomShowtimes.containsKey(roomKey)) {
+                        roomShowtimes.put(roomKey, new ArrayList<>());
+                    }
+
+                    Map<String, Object> showtimeData = new HashMap<>();
+                    showtimeData.put("showtimeId", showtime.getShowtimeId());
+                    showtimeData.put("startTime", showtime.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+                    showtimeData.put("price", showtime.getPrice());
+                    showtimeData.put("roomId", room.getRoomId());
+
+                    roomShowtimes.get(roomKey).add(showtimeData);
+                }
+
+                // Sort showtimes by start time for each room
+                for (List<Map<String, Object>> times : roomShowtimes.values()) {
+                    times.sort(Comparator.comparing(t -> (String) t.get("startTime")));
+                }
+
+                cinemaData.put("roomShowtimes", roomShowtimes);
+                result.add(cinemaData);
+            }
+        }
+
+        return result;
     }
 
     private List<Map<String, String>> generateShowDates(LocalDate releaseDate, LocalDate endDate) {
@@ -80,7 +113,6 @@ public class BookTicketController {
         LocalDate actualEndDate = endDate != null ? endDate : releaseDate.plusDays(30);
         if (actualEndDate.isBefore(releaseDate)) actualEndDate = releaseDate;
 
-        // Chỉ lấy từ hôm nay (nếu phim đã chiếu rồi)
         LocalDate startDate = releaseDate.isBefore(today) ? today : releaseDate;
 
         LocalDate currentDate = startDate;
@@ -107,6 +139,7 @@ public class BookTicketController {
 
         return dates;
     }
+
     private String capitalizeFirst(String str) {
         if (str == null || str.isEmpty()) return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);

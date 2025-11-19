@@ -1,0 +1,35 @@
+<!-- orders.html -->
+<div>
+    <h2>Quản lý hóa đơn</h2>
+    <p class="muted">Danh sách hóa đơn; xem chi tiết; xử lý hoàn/huỷ</p>
+    <div style="height:12px"></div>
+    <div class="panel">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Mã đơn</th>
+                    <th>Người mua</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>ORD20251119-001</td>
+                    <td>Nguyễn Văn A</td>
+                    <td>₫150,000</td>
+                    <td>Đã thanh toán</td>
+                    <td><button onclick="viewOrder(1)">Xem</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function viewOrder(id) { alert('Xem chi tiết đơn ' + id); }
+    window.onViewLoaded = (f) => { if (f === 'orders.html') console.log('Orders init'); };
+</script>

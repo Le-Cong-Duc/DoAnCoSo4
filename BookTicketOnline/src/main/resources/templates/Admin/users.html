@@ -1,0 +1,48 @@
+<!-- users.html -->
+<div id="usersRoot">
+    <h2>Quản lý người dùng</h2>
+    <p class="muted">Danh sách người dùng; tìm kiếm; thêm/ sửa/ xóa</p>
+    <div style="height:12px"></div>
+    <div class="panel">
+        <button onclick="addUser()">Thêm người dùng</button>
+        <div style="height:12px"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên</th>
+                    <th>Email</th>
+                    <th>Vai trò</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="usersTable">
+                <tr>
+                    <td>1</td>
+                    <td>Nguyễn Văn A</td>
+                    <td>a@example.com</td>
+                    <td>User</td>
+                    <td><button onclick="edit(1)">Sửa</button> <button onclick="del(1)">Xóa</button></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Trần Thị B</td>
+                    <td>b@example.com</td>
+                    <td>Admin</td>
+                    <td><button onclick="edit(2)">Sửa</button> <button onclick="del(2)">Xóa</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function addUser() { alert('Mở form thêm người dùng (demo)'); }
+    function edit(id) { alert('Sửa người dùng id=' + id); }
+    function del(id) { if (confirm('Xóa người dùng ' + id + '?')) { alert('Đã xóa (demo)'); } }
+
+    window.onViewLoaded = (file) => {
+        // optional: init for users view
+        if (file === 'users.html') console.log('Users loaded');
+    };
+</script>

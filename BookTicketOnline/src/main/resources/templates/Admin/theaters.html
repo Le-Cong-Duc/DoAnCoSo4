@@ -1,0 +1,37 @@
+<!-- theaters.html -->
+<div>
+    <h2>Quản lý rạp chiếu</h2>
+    <p class="muted">Danh sách rạp; phòng chiếu; số ghế</p>
+    <div style="height:12px"></div>
+    <div class="panel">
+        <button onclick="addTheater()">Thêm rạp</button>
+        <div style="height:12px"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tên rạp</th>
+                    <th>Địa chỉ</th>
+                    <th>Phòng</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>CineStar</td>
+                    <td>Quận 1, TP.HCM</td>
+                    <td>5</td>
+                    <td><button onclick="editTheater(1)">Sửa</button> <button onclick="delTheater(1)">Xóa</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function addTheater() { alert('Thêm rạp demo'); }
+    function editTheater(id) { alert('Sửa rạp ' + id); }
+    function delTheater(id) { if (confirm('Xóa rạp ' + id + '?')) alert('Đã xóa (demo)'); }
+    window.onViewLoaded = (f) => { if (f === 'theaters.html') console.log('Theaters init'); };
+</script>

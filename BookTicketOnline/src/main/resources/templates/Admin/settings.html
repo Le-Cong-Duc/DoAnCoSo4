@@ -1,0 +1,26 @@
+<!-- settings.html -->
+<div>
+    <h2>Cài đặt</h2>
+    <p class="muted">Thay đổi thông tin admin, cấu hình hệ thống</p>
+    <div style="height:10px"></div>
+    <div class="panel">
+        <label>Họ tên</label><br />
+        <input id="adminName" style="padding:8px;border-radius:8px;border:1px solid #e6eef8;width:320px"
+            value="Admin" /><br /><br />
+        <label>Email</label><br />
+        <input id="adminEmail" style="padding:8px;border-radius:8px;border:1px solid #e6eef8;width:320px"
+            value="admin@example.com" /><br /><br />
+        <button onclick="saveSettings()"
+            style="padding:10px 14px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer">Lưu</button>
+    </div>
+</div>
+
+<script>
+    function saveSettings() {
+        const name = document.getElementById('adminName').value;
+        const email = document.getElementById('adminEmail').value;
+        alert('Lưu (demo): ' + name + ' / ' + email);
+        // thực tế: POST lên API để cập nhật
+    }
+    window.onViewLoaded = (f) => { if (f === 'settings.html') console.log('Settings init'); };
+</script>

@@ -93,21 +93,21 @@
                     <!--                    Pick Cinema-->
                     <h3 class="section-title">Chọn Rạp Chiếu</h3>
                     <div class="row g-3 mb-4">
-                        <div class="col-md-6 col-lg-4" th:each="cinema : ${cinemas}">
+                        <div class="col-md-6 col-lg-4" th:each="cinemaData : ${cinemasWithShowtimes}">
                             <input type="radio"
                                    class="btn-check"
                                    name="cinemaId"
-                                   th:id="${cinema.cinemaId}"
-                                   th:value="${cinema.cinemaId}"
+                                   th:id="${cinemaData.cinema.cinemaId}"
+                                   th:value="${cinemaData.cinema.cinemaId}"
                                    required>
-                            <label class="cinema-card w-100" th:for="${cinema.cinemaId}">
+                            <label class="cinema-card w-100" th:for="${cinemaData.cinema.cinemaId}">
                                 <div class="card-body">
-                                    <h6 class="fw-bold mb-2" th:text="${cinema.cinemaName}"></h6>
+                                    <h6 class="fw-bold mb-2" th:text="${cinemaData.cinema.cinemaName}"></h6>
                                     <p class="small text-muted mb-1">
-                                        <span th:text="${cinema.address}"></span>
+                                        <span th:text="${cinemaData.cinema.address}"></span>
                                     </p>
-                                    <p class="small text-muted mb-0" th:if="${cinema.city}">
-                                        🏙<span th:text="${cinema.city}"></span>
+                                    <p class="small text-muted mb-0" th:if="${cinemaData.cinema.city}">
+                                        🏙<span th:text="${cinemaData.cinema.city}"></span>
                                     </p>
                                 </div>
                             </label>

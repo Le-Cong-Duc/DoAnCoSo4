@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Seat Layout</title>
+    <style>
+        .screen {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .seat-row {
+            display: flex;
+            justify-content: center;
+            margin: 5px 0;
+            gap: 5px;
+        }
+        .seat {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        .seat.available {
+            background: #4CAF50;
+            color: white;
+        }
+        .seat.occupied {
+            background: #f44336;
+            color: white;
+            cursor: not-allowed;
+        }
+        .seat.selected {
+            background: #2196F3;
+            color: white;
+        }
+        .row-label {
+            width: 30px;
+            text-align: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<div th:if="${roomWithSeats}">
+    <h2>Phòng: <span th:text="${roomWithSeats.room?.roomName}">R1</span></h2>
+
+    <div class="screen">MÀN HÌNH</div>
+
+    <!-- Hiển thị ghế theo hàng -->
+    <div th:each="rowEntry : ${roomWithSeats.seatsByRow}">
+        <div class="seat-row">
+            <div class="row-label" th:text="${rowEntry.key}">1</div>
+            <div th:each="seat : ${rowEntry.value}"
+                 class="seat"
+                 th:classappend="${seat.status == 1} ? 'available' : 'occupied'"
+                 th:attr="data-seat-id=${seat.seatId}, data-status=${seat.status}"
+                 th:text="${seat.seatNumber}"
+                 onclick="selectSeat(this)"></div>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <div style="display: inline-block; margin-right: 20px;">
+            <div style="display: inline-block; width: 20px; height: 20px; background: #4CAF50;"></div>
+            <span> Ghế trống</span>
+        </div>
+        <div style="display: inline-block; margin-right: 20px;">
+            <div style="display: inline-block; width: 20px; height: 20px; background: #f44336;"></div>
+            <span> Ghế đã đặt</span>
+        </div>
+        <div style="display: inline-block;">
+            <div style="display: inline-block; width: 20px; height: 20px; background: #2196F3;"></div>
+            <span> Ghế đang chọn</span>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <button onclick="confirmSelection()">Xác nhận chọn ghế</button>
+        <span id="selectedSeatsInfo" style="margin-left: 20px;"></span>
+    </div>
+</div>
+
+<script>
+    let selectedSeats = [];
+
+    function selectSeat(element) {
+        const seatId = element.getAttribute('data-seat-id');
+        const status = element.getAttribute('data-status');
+
+        // Chỉ cho phép chọn ghế available
+        if (status !== '1') return;
+
+        const index = selectedSeats.indexOf(seatId);
+
+        if (index === -1) {
+            // Chọn ghế
+            selectedSeats.push(seatId);
+            element.classList.add('selected');
+        } else {
+            // Bỏ chọn ghế
+            selectedSeats.splice(index, 1);
+            element.classList.remove('selected');
+        }
+
+        updateSelectedSeatsInfo();
+    }
+
+    function updateSelectedSeatsInfo() {
+        const infoElement = document.getElementById('selectedSeatsInfo');
+        if (selectedSeats.length > 0) {
+            infoElement.textContent = `Đã chọn ${selectedSeats.length} ghế: ${selectedSeats.join(', ')}`;
+        } else {
+            infoElement.textContent = '';
+        }
+    }
+
+    function confirmSelection() {
+        if (selectedSeats.length === 0) {
+            alert('Vui lòng chọn ít nhất một ghế!');
+            return;
+        }
+
+        // Gửi thông tin ghế đã chọn lên server
+        fetch('/api/booking/select-seats', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                seatIds: selectedSeats,
+                showtimeId: getShowtimeId() // Lấy từ URL hoặc biến global
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Chọn ghế thành công!');
+                // Chuyển đến trang thanh toán
+                window.location.href = '/booking/payment';
+            } else {
+                alert('Có lỗi xảy ra: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi chọn ghế');
+        });
+    }
+
+    function getShowtimeId() {
+        // Lấy showtimeId từ URL hoặc biến global
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('showtimeId');
+    }
+</script>
+</body>
+</html>

@@ -67,7 +67,7 @@
 
             <!--            Booking Form-->
             <div class="p-4" id="bookingForm">
-                <form th:action="@{BookTicket}" method="post">
+                <form th:action="@{BookSeat}" method="get">
                     <input type="hidden" name="movieId" th:value="${movie.movieId}">
 
                     <!-- Pick Day -->
@@ -92,25 +92,42 @@
                     </div>
                     <!--                    Pick Cinema-->
                     <h3 class="section-title">Chọn Rạp Chiếu</h3>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6 col-lg-4" th:each="cinemaData : ${cinemasWithShowtimes}">
-                            <input type="radio"
-                                   class="btn-check"
-                                   name="cinemaId"
-                                   th:id="${cinemaData.cinema.cinemaId}"
-                                   th:value="${cinemaData.cinema.cinemaId}"
-                                   required>
-                            <label class="cinema-card w-100" th:for="${cinemaData.cinema.cinemaId}">
-                                <div class="card-body">
-                                    <h6 class="fw-bold mb-2" th:text="${cinemaData.cinema.cinemaName}"></h6>
-                                    <p class="small text-muted mb-1">
-                                        <span th:text="${cinemaData.cinema.address}"></span>
-                                    </p>
-                                    <p class="small text-muted mb-0" th:if="${cinemaData.cinema.city}">
-                                        🏙<span th:text="${cinemaData.cinema.city}"></span>
-                                    </p>
+                    <div id="cinemasContainer">
+                        <!-- Show cinemas if available -->
+                        <div th:if="${cinemasWithShowtimes != null and !cinemasWithShowtimes.isEmpty()}">
+                            <!-- Loop through each cinema -->
+                            <div th:each="cinemaData : ${cinemasWithShowtimes}" class="cinema-card">
+                                <!-- Cinema Header -->
+                                <div class="cinema-header">
+                                    <h5 th:text="${cinemaData.cinema.cinemaName}">ABC Cinema</h5>
+                                    <div class="cinema-info" th:text="${cinemaData.cinema.address}">Ngu Hanh Son</div>
+                                    <div class="cinema-info" th:if="${cinemaData.cinema.city}">
+                                        <span th:text="${cinemaData.cinema.city}">Da Nang</span>
+                                    </div>
                                 </div>
-                            </label>
+
+                                <!-- Room Types and Showtimes -->
+                                <div th:each="roomEntry : ${cinemaData.roomShowtimes}" class="room-showtime-group">
+<!--                                    <div class="room-name" th:text="${roomEntry.key}">2D Phụ Đề</div>-->
+                                    <div class="showtime-buttons">
+                                        <button type="button"
+                                                th:each="showtime : ${roomEntry.value}"
+                                                class="showtime-btn"
+                                                th:attr="data-showtime-id=${showtime.showtimeId}"
+                                                th:text="${showtime.startTime}"
+                                                onclick="selectShowtime(this)">
+                                            10:00
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Show message if no showtimes -->
+                        <div th:if="${cinemasWithShowtimes == null or cinemasWithShowtimes.isEmpty()}"
+                             class="no-showtimes-alert">
+                            <h5>⚠️ Không có suất chiếu</h5>
+                            <p class="mb-0">Hiện tại không có suất chiếu nào cho ngày này. Vui lòng chọn ngày khác!</p>
                         </div>
                     </div>
 

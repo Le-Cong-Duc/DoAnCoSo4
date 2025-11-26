@@ -1,18 +1,18 @@
 package com.example.BookTicketOnline.Controller;
 
-import com.example.BookTicketOnline.Entity.Cinemas;
-import com.example.BookTicketOnline.Entity.Movies;
-import com.example.BookTicketOnline.Entity.Rooms;
-import com.example.BookTicketOnline.Entity.Showtime;
+import com.example.BookTicketOnline.Entity.*;
 import com.example.BookTicketOnline.Service.CinemasService;
 import com.example.BookTicketOnline.Service.MoviesService;
+import com.example.BookTicketOnline.Service.SeatsService;
 import com.example.BookTicketOnline.Service.ShowtimeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -21,13 +21,12 @@ import java.util.*;
 public class BookTicketController {
     @Autowired
     private MoviesService moviesService;
-
     @Autowired
     private CinemasService cinemasService;
-
     @Autowired
     private ShowtimeService showTimeService;
-
+    @Autowired
+    private SeatsService seatsService;
     @GetMapping("/BookTicket/{movieId}")
     public String bookTicket(@PathVariable Integer movieId,
                              @RequestParam(required = false) String date,
@@ -55,6 +54,7 @@ public class BookTicketController {
         return "User/BookTicketPage";
     }
 
+
     private List<Map<String, Object>> getCinemasWithShowtimes(Integer movieId, String dateStr) {
         List<Map<String, Object>> result = new ArrayList<>();
         LocalDate selectedDate = LocalDate.parse(dateStr);
@@ -64,8 +64,7 @@ public class BookTicketController {
 
         for (Cinemas cinema : cinemas) {
             // Get showtimes for this cinema, movie and date
-            List<Showtime> showtimes = showTimeService.getShowtimeByCinemaMovieAndDate(
-                    cinema.getCinemaId(), movieId, selectedDate);
+            List<Showtime> showtimes = showTimeService.getShowtimeByCinemaMovieAndDate(cinema.getCinemaId(), movieId, selectedDate);
 
             if (!showtimes.isEmpty()) {
                 Map<String, Object> cinemaData = new HashMap<>();
@@ -76,7 +75,7 @@ public class BookTicketController {
 
                 for (Showtime showtime : showtimes) {
                     Rooms room = showtime.getRoomId();
-                    String roomKey = room.getRoomName(); // e.g., "2D Phụ Đề", "IMAX 2D Phụ Đề"
+                    String roomKey = room.getRoomName();
 
                     if (!roomShowtimes.containsKey(roomKey)) {
                         roomShowtimes.put(roomKey, new ArrayList<>());
@@ -91,7 +90,6 @@ public class BookTicketController {
                     roomShowtimes.get(roomKey).add(showtimeData);
                 }
 
-                // Sort showtimes by start time for each room
                 for (List<Map<String, Object>> times : roomShowtimes.values()) {
                     times.sort(Comparator.comparing(t -> (String) t.get("startTime")));
                 }
